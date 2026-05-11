@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProbLab — Discrete Math Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      <div>
+        <div class="logo-text">ProbLab</div>
+        <div class="logo-sub">Discrete Math Explorer</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn active" data-module="sets">
+        <span class="nav-icon">∩</span>
+        <div>
+          <div class="nav-title">Set Theory</div>
+          <div class="nav-sub">Operations &amp; Venn Diagrams</div>
+        </div>
+      </button>
+      <button class="nav-btn" data-module="counting">
+        <span class="nav-icon">n!</span>
+        <div>
+          <div class="nav-title">Counting</div>
+          <div class="nav-sub">Permutations &amp; Combinations</div>
+        </div>
+      </button>
+      <button class="nav-btn" data-module="sigma">
+        <span class="nav-icon">Σ</span>
+        <div>
+          <div class="nav-title">Summation &amp; Product</div>
+          <div class="nav-sub">Σ and Π Notation</div>
+        </div>
+      </button>
+      <button class="nav-btn" data-module="prob">
+        <span class="nav-icon">P</span>
+        <div>
+          <div class="nav-title">Probability</div>
+          <div class="nav-sub">Events, Axioms, Sample Space</div>
+        </div>
+      </button>
+      <button class="nav-btn" data-module="binomial">
+        <span class="nav-icon">△</span>
+        <div>
+          <div class="nav-title">Binomial &amp; Pascal</div>
+          <div class="nav-sub">Binomial Theorem, Pascal's Triangle</div>
+        </div>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      Probability &amp; Statistics · CSPC
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- ════ MODULE: SETS ════ -->
+    <section class="module active" id="module-sets">
+      <div class="module-header">
+        <h1>Set Theory</h1>
+        <p>Define sets, apply operations, and visualize with interactive Venn diagrams</p>
+      </div>
+
+      <div class="card">
+        <h2>Define Your Sets</h2>
+        <div class="input-grid three">
+          <div class="input-group">
+            <label>Universal Set U <span class="optional">(optional)</span></label>
+            <input type="text" id="setU" placeholder="1, 2, 3, 4, 5, 6, 7, 8, 9, 10">
+          </div>
+          <div class="input-group">
+            <label>Set A</label>
+            <input type="text" id="setA" placeholder="1, 2, 3, 4, 5">
+          </div>
+          <div class="input-group">
+            <label>Set B</label>
+            <input type="text" id="setB" placeholder="3, 4, 5, 6, 7">
+          </div>
+        </div>
+        <div class="op-btns">
+          <button class="op-btn active" data-op="union">A ∪ B</button>
+          <button class="op-btn" data-op="intersection">A ∩ B</button>
+          <button class="op-btn" data-op="diffAB">A − B</button>
+          <button class="op-btn" data-op="diffBA">B − A</button>
+          <button class="op-btn" data-op="compA">A′</button>
+          <button class="op-btn" data-op="compB">B′</button>
+        </div>
+        <button class="btn-primary" onclick="computeSets()">Compute</button>
+      </div>
+
+      <div class="results-grid">
+        <div class="card">
+          <h3 class="card-label">Venn Diagram</h3>
+          <div class="venn-wrap">
+            <svg id="vennSvg" viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg">
+              <rect width="460" height="280" rx="8" fill="none" stroke="#1a2540" stroke-width="1"/>
+              <text x="14" y="24" fill="#475569" font-family="Syne,sans-serif" font-size="12" font-weight="600">U</text>
+              <defs>
+                <mask id="maskAonly">
+                  <rect width="460" height="280" fill="black"/>
+                  <circle cx="185" cy="140" r="110" fill="white"/>
+                  <circle cx="275" cy="140" r="110" fill="black"/>
+                </mask>
+                <clipPath id="clipByA">
+                  <circle cx="185" cy="140" r="110"/>
+                </clipPath>
+                <mask id="maskBonly">
+                  <rect width="460" height="280" fill="black"/>
+                  <circle cx="275" cy="140" r="110" fill="white"/>
+                  <circle cx="185" cy="140" r="110" fill="black"/>
+                </mask>
+                <mask id="maskOutside">
+                  <rect width="460" height="280" fill="white"/>
+                  <circle cx="185" cy="140" r="110" fill="black"/>
+                  <circle cx="275" cy="140" r="110" fill="black"/>
+                </mask>
+              </defs>
+              <!-- Regions -->
+              <rect id="regionAonly"    width="460" height="280" fill="rgba(129,140,248,0.35)" mask="url(#maskAonly)"  opacity="0"/>
+              <circle id="regionIntersect" cx="275" cy="140" r="110" fill="rgba(100,210,230,0.45)" clip-path="url(#clipByA)" opacity="0"/>
+              <rect id="regionBonly"    width="460" height="280" fill="rgba(0,229,160,0.35)"  mask="url(#maskBonly)"  opacity="0"/>
+              <rect id="regionOutside"  width="460" height="280" fill="rgba(245,158,11,0.2)"  mask="url(#maskOutside)" opacity="0"/>
+              <!-- Outlines -->
+              <circle cx="185" cy="140" r="110" fill="none" stroke="#818cf8" stroke-width="2.5"/>
+              <circle cx="275" cy="140" r="110" fill="none" stroke="#00e5a0" stroke-width="2.5"/>
+              <!-- Labels -->
+              <text x="108" y="148" text-anchor="middle" fill="#818cf8" font-family="Syne,sans-serif" font-size="26" font-weight="800">A</text>
+              <text x="352" y="148" text-anchor="middle" fill="#00e5a0" font-family="Syne,sans-serif" font-size="26" font-weight="800">B</text>
+              <!-- Intersection text -->
+              <text id="vennIntersectText" x="230" y="148" text-anchor="middle" fill="#e2e8f0" font-family="JetBrains Mono,monospace" font-size="11"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-label">Result</h3>
+          <div id="setResultLabel" class="result-op-label"></div>
+          <div id="setResultFormula" class="result-formula"></div>
+          <div id="setResultElems" class="elem-cloud">
+            <span class="placeholder-text">Define sets and click Compute</span>
+          </div>
+          <div id="setStats" class="stats-row"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ MODULE: COUNTING ════ -->
+    <section class="module" id="module-counting">
+      <div class="module-header">
+        <h1>Counting Principles</h1>
+        <p>Permutations, combinations, sum rule, and product rule — step by step</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="perms">Permutations</button>
+        <button class="tab" data-tab="combs">Combinations</button>
+        <button class="tab" data-tab="rules">Sum &amp; Product Rule</button>
+      </div>
+
+      <!-- Permutations -->
+      <div class="tab-content active" id="tab-perms">
+        <div class="card">
+          <h2>Permutations P(n, r)</h2>
+          <p class="card-desc">Ordered arrangements of r items from n distinct items. Order matters.</p>
+          <div class="formula-box">P(n, r) = n! / (n − r)!</div>
+          <div class="input-grid two">
+            <div class="input-group">
+              <label>n &nbsp; (total items)</label>
+              <input type="number" id="permN" min="0" max="20" value="5">
+            </div>
+            <div class="input-group">
+              <label>r &nbsp; (items selected)</label>
+              <input type="number" id="permR" min="0" max="20" value="3">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computePermutation()">Calculate</button>
+          <div id="permResult" class="result-box hidden"></div>
+        </div>
+      </div>
+
+      <!-- Combinations -->
+      <div class="tab-content" id="tab-combs">
+        <div class="card">
+          <h2>Combinations C(n, r)</h2>
+          <p class="card-desc">Unordered selections of r items from n distinct items. Order does not matter.</p>
+          <div class="formula-box">C(n, r) = n! / (r! · (n − r)!)</div>
+          <div class="input-grid two">
+            <div class="input-group">
+              <label>n &nbsp; (total items)</label>
+              <input type="number" id="combN" min="0" max="20" value="5">
+            </div>
+            <div class="input-group">
+              <label>r &nbsp; (items selected)</label>
+              <input type="number" id="combR" min="0" max="20" value="3">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computeCombination()">Calculate</button>
+          <div id="combResult" class="result-box hidden"></div>
+        </div>
+      </div>
+
+      <!-- Sum & Product Rules -->
+      <div class="tab-content" id="tab-rules">
+        <div class="card">
+          <h2>Sum Rule</h2>
+          <p class="card-desc">If tasks are mutually exclusive, total ways = sum of individual ways.</p>
+          <div class="formula-box">|A ∪ B| = |A| + |B| &nbsp;&nbsp; when A ∩ B = ∅</div>
+          <div id="sumTasksContainer" class="task-inputs"></div>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="addSumTask()">+ Add Task</button>
+            <button class="btn-primary" onclick="computeSumRule()">Calculate</button>
+          </div>
+          <div id="sumRuleResult" class="result-box hidden"></div>
+        </div>
+        <div class="card">
+          <h2>Product Rule</h2>
+          <p class="card-desc">If tasks are independent, total outcomes = product of choices at each stage.</p>
+          <div class="formula-box">|A × B| = |A| · |B|</div>
+          <div id="prodTasksContainer" class="task-inputs"></div>
+          <div class="btn-row">
+            <button class="btn-secondary" onclick="addProdTask()">+ Add Stage</button>
+            <button class="btn-primary" onclick="computeProductRule()">Calculate</button>
+          </div>
+          <div id="prodRuleResult" class="result-box hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ MODULE: SIGMA ════ -->
+    <section class="module" id="module-sigma">
+      <div class="module-header">
+        <h1>Summation &amp; Product Notation</h1>
+        <p>Evaluate Σ and Π expressions with full term-by-term breakdowns</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="summation">Σ Summation</button>
+        <button class="tab" data-tab="productnotation">Π Product</button>
+      </div>
+
+      <!-- Summation -->
+      <div class="tab-content active" id="tab-summation">
+        <div class="card">
+          <h2>Summation Notation</h2>
+          <div class="sigma-display" id="sumDisplay">
+            <span class="big-greek accent-green">Σ</span>
+            <div class="greek-limits">
+              <span id="sumLimitTop">n</span>
+              <span id="sumLimitBot">i = 1</span>
+            </div>
+            <span class="greek-expr" id="sumExprDisplay">f(i)</span>
+          </div>
+          <div class="input-grid three">
+            <div class="input-group">
+              <label>Start &nbsp; (i =)</label>
+              <input type="number" id="sigmaStart" value="1">
+            </div>
+            <div class="input-group">
+              <label>End &nbsp; (n =)</label>
+              <input type="number" id="sigmaEnd" value="5">
+            </div>
+            <div class="input-group">
+              <label>Expression f(i)</label>
+              <select id="sigmaExpr">
+                <option value="i">i</option>
+                <option value="i*i">i²</option>
+                <option value="i*i*i">i³</option>
+                <option value="2*i+1">2i + 1</option>
+                <option value="i*(i+1)">i(i+1)</option>
+                <option value="1/i">1 / i</option>
+                <option value="Math.pow(2,i)">2ⁱ</option>
+                <option value="Math.pow(-1,i)*i">(-1)ⁱ · i</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computeSummation()">Evaluate</button>
+          <div id="summationResult" class="result-box hidden"></div>
+        </div>
+      </div>
+
+      <!-- Product -->
+      <div class="tab-content" id="tab-productnotation">
+        <div class="card">
+          <h2>Product Notation</h2>
+          <div class="sigma-display">
+            <span class="big-greek accent-amber">Π</span>
+            <div class="greek-limits">
+              <span id="piLimitTop">n</span>
+              <span id="piLimitBot">i = 1</span>
+            </div>
+            <span class="greek-expr" id="piExprDisplay">f(i)</span>
+          </div>
+          <div class="input-grid three">
+            <div class="input-group">
+              <label>Start &nbsp; (i =)</label>
+              <input type="number" id="piStart" value="1">
+            </div>
+            <div class="input-group">
+              <label>End &nbsp; (n =)</label>
+              <input type="number" id="piEnd" value="5">
+            </div>
+            <div class="input-group">
+              <label>Expression f(i)</label>
+              <select id="piExpr">
+                <option value="i">i</option>
+                <option value="i*i">i²</option>
+                <option value="2*i">2i</option>
+                <option value="i+1">i + 1</option>
+                <option value="1/i">1 / i</option>
+                <option value="(i+1)/i">(i+1) / i</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computeProduct()">Evaluate</button>
+          <div id="productResult" class="result-box hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ MODULE: PROBABILITY ════ -->
+    <section class="module" id="module-prob">
+      <div class="module-header">
+        <h1>Discrete Probability</h1>
+        <p>Sample spaces, events, mutual exclusivity, and Kolmogorov's axioms</p>
+      </div>
+
+      <div class="card">
+        <h2>Define Sample Space &amp; Events</h2>
+        <p class="card-desc">Enter comma-separated values. Events must be subsets of the sample space.</p>
+        <div class="input-grid three">
+          <div class="input-group">
+            <label>Sample Space Ω</label>
+            <input type="text" id="sampleSpace" placeholder="1, 2, 3, 4, 5, 6">
+          </div>
+          <div class="input-group">
+            <label>Event A</label>
+            <input type="text" id="eventA" placeholder="2, 4, 6">
+          </div>
+          <div class="input-group">
+            <label>Event B &nbsp;<span class="optional">(optional)</span></label>
+            <input type="text" id="eventB" placeholder="1, 2, 3">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="computeProbability()">Compute</button>
+      </div>
+
+      <div id="probResults"></div>
+
+      <div class="card" id="axiomCard" style="display:none">
+        <h2>Kolmogorov's Axioms — Verification</h2>
+        <p class="card-desc">All three must hold for a valid probability measure.</p>
+        <div id="axiomResults" class="axiom-grid"></div>
+      </div>
+    </section>
+
+    <!-- ════ MODULE: BINOMIAL ════ -->
+    <section class="module" id="module-binomial">
+      <div class="module-header">
+        <h1>Binomial Theorem &amp; Pascal's Triangle</h1>
+        <p>Expand binomials, explore Pascal's triangle, and apply inclusion-exclusion</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="pascal">Pascal's Triangle</button>
+        <button class="tab" data-tab="expand">Binomial Expansion</button>
+        <button class="tab" data-tab="inclexcl">Inclusion-Exclusion</button>
+      </div>
+
+      <!-- Pascal -->
+      <div class="tab-content active" id="tab-pascal">
+        <div class="card">
+          <h2>Pascal's Triangle</h2>
+          <p class="card-desc">Row n contains the binomial coefficients C(n, 0), C(n, 1), …, C(n, n). Hover a cell to highlight its column.</p>
+          <div class="input-grid two" style="max-width:340px">
+            <div class="input-group">
+              <label>Number of rows (1–12)</label>
+              <input type="number" id="pascalRows" value="8" min="1" max="12">
+            </div>
+            <div class="input-group" style="justify-content:flex-end">
+              <label>&nbsp;</label>
+              <button class="btn-primary" onclick="drawPascal()" style="height:40px">Generate</button>
+            </div>
+          </div>
+          <div id="pascalContainer" class="pascal-container"></div>
+        </div>
+      </div>
+
+      <!-- Binomial Expansion -->
+      <div class="tab-content" id="tab-expand">
+        <div class="card">
+          <h2>Binomial Expansion (a + b)<sup>n</sup></h2>
+          <div class="formula-box">(a + b)ⁿ = Σ C(n, k) · aⁿ⁻ᵏ · bᵏ &nbsp; for k = 0 to n</div>
+          <div class="input-grid three">
+            <div class="input-group">
+              <label>a</label>
+              <input type="text" id="biA" value="x">
+            </div>
+            <div class="input-group">
+              <label>b</label>
+              <input type="text" id="biB" value="y">
+            </div>
+            <div class="input-group">
+              <label>n (exponent, 0–10)</label>
+              <input type="number" id="biN" value="4" min="0" max="10">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="expandBinomial()">Expand</button>
+          <div id="binomialResult" class="result-box hidden"></div>
+        </div>
+      </div>
+
+      <!-- Inclusion-Exclusion & Pigeonhole -->
+      <div class="tab-content" id="tab-inclexcl">
+        <div class="card">
+          <h2>Inclusion-Exclusion Principle</h2>
+          <p class="card-desc">The count of elements in A ∪ B when sets may overlap.</p>
+          <div class="formula-box">|A ∪ B| = |A| + |B| − |A ∩ B|</div>
+          <div class="input-grid three">
+            <div class="input-group">
+              <label>|A|</label>
+              <input type="number" id="ieA" value="30" min="0">
+            </div>
+            <div class="input-group">
+              <label>|B|</label>
+              <input type="number" id="ieB" value="20" min="0">
+            </div>
+            <div class="input-group">
+              <label>|A ∩ B|</label>
+              <input type="number" id="ieAB" value="10" min="0">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computeInclusionExclusion()">Calculate</button>
+          <div id="ieResult" class="result-box hidden"></div>
+        </div>
+
+        <div class="card">
+          <h2>Pigeonhole Principle</h2>
+          <p class="card-desc">If n items are placed into k containers, at least one container must hold ⌈n/k⌉ items.</p>
+          <div class="formula-box">guaranteed maximum in one container = ⌈ n / k ⌉</div>
+          <div class="input-grid two">
+            <div class="input-group">
+              <label>n &nbsp; (items)</label>
+              <input type="number" id="phN" value="10" min="1">
+            </div>
+            <div class="input-group">
+              <label>k &nbsp; (containers)</label>
+              <input type="number" id="phK" value="3" min="1">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="computePigeonhole()">Calculate</button>
+          <div id="phResult" class="result-box hidden"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
